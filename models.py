@@ -26,3 +26,6 @@ class Location(Model):
 
 class Action(Model):
   pass
+
+class Attribute(Model):
+  pass
