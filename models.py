@@ -1,3 +1,6 @@
+import random
+
+
 class Model(dict):
   pass
 
@@ -29,3 +32,14 @@ class Action(Model):
 
 class Attribute(Model):
   pass
+
+class DomainModel:
+  def __init__(self, objects, actions, characters, locations):
+    self.objects = objects[:]
+    random.shuffle(self.objects)
+    self.actions = actions[:]
+    random.shuffle(self.actions)
+    self.characters = characters[:]
+    random.shuffle(self.characters)
+    self.locations = locations[:]
+    random.shuffle(self.locations)
