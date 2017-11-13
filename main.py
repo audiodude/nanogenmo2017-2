@@ -2,7 +2,7 @@ import random
 
 import messages
 import models
-from components import DocumentPlanner
+from components import DocumentPlanner, Microplanner
 
 eggs = models.Object(name='eggs')
 
@@ -41,6 +41,6 @@ model = models.DomainModel([eggs], [sleep, get_eggs], [henry], [home, store])
 dp = DocumentPlanner(model)
 dp.run()
 
-
+microplanner = Microplanner(dp.messages)
 
 print(repr(dp.messages))

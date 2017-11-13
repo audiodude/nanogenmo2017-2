@@ -43,3 +43,8 @@ class DocumentPlanner:
     for i, o in zip(range(n_to_desc), objs):
       self.messages.append(
         messages.DescribeObjectLocationMsg(obj=o, location=l))
+
+
+class Microplanner:
+  def __init__(self, document_plan):
+    self.document_plan = document_plan
