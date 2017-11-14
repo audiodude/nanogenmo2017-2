@@ -2,7 +2,7 @@ import random
 
 import messages
 import models
-from components import DocumentPlanner, Microplanner
+from components import DocumentPlanner, Microplanner, Realizer
 
 eggs = models.Object(name='eggs')
 
@@ -42,5 +42,9 @@ dp = DocumentPlanner(model)
 dp.run()
 
 microplanner = Microplanner(dp.messages)
+microplanner.run()
 
-print(repr(dp.messages))
+realizer = Realizer(microplanner.text_specification)
+realizer.run()
+
+print(realizer.text)
