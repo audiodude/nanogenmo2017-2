@@ -2,6 +2,7 @@ import random
 
 import messages
 import models
+import phrase
 
 class DocumentPlanner:
   def __init__(self, domain_model):
@@ -53,10 +54,56 @@ class Realizer:
     self.document_plan = document_plan[:]
 
   def run(self):
-    self.proto_ps = [msg.to_proto_ps() for msg in self.document_plan]
-    self.text_specification = [pps for ar in self.proto_ps for pps in ar]
+    self.ps = [msg.to_ps() for msg in self.document_plan]
+    self.ps = [ps for ar in self.ps for ps in ar]
+
+    self.aggregate()
+
     self.proto_sentences = [str(x) for x in self.text_specification]
     self.text = ' '.join(self.make_sentence(s) for s in self.proto_sentences)
+
+  def aggregate(self):
+    self.text_specification = []
+    last_ps = None
+    combined = False
+    for ps in self.ps:
+      if last_ps is None:
+        last_ps = ps
+        continue
+
+      if combined:
+        combined = False
+        last_ps = ps
+        continue
+
+      if (ps.subject.equals(last_ps.subject) and
+          ps.predicate.equals(last_ps.predicate)):
+        combined = True
+
+        ps_obj_str = str(ps.obj)
+        lps_obj_str = str(last_ps.obj)
+
+        new_obj = None
+        if ps_obj_str.startswith('a ') and not lps_obj_str.startswith('a '):
+          if 'years old' in lps_obj_str:
+            lps_obj_str = lps_obj_str.replace('years old', 'year old')
+          new_obj = phrase.CannedText(
+            text=ps_obj_str.replace('a ', 'a %s ' % lps_obj_str))
+        elif lps_obj_str.startswith('a ') and not ps_obj_str.startswith('a '):
+          if 'years old' in ps_obj_str:
+            ps_obj_str = ps_obj_str.replace('years old', 'year old')
+          new_obj = phrase.CannedText(
+            text=lps_obj_str.replace('a ', 'a %s ' % ps_obj_str))
+        else:
+          new_obj = phrase.CannedText(text=ps_obj_str + ' and ' + lps_obj_str)
+
+        new_ps = phrase.PSAbstractSyntax(
+          subject=ps.subject, predicate=ps.predicate, obj=new_obj)
+        self.text_specification.append(new_ps)
+      else:
+        combined = False
+        self.text_specification.append(last_ps)
+      last_ps = ps
 
   def make_sentence(self, s):
     return s[0].upper() + s[1:] + '.'

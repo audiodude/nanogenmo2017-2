@@ -21,8 +21,9 @@ bedroom = models.Location(
   name=models.Name(name='bedroom', proper=False), size='room',
   satisfies=[sleep],
   objects_present=[
-    models.Object(name='bed'), models.Object(name='desk'), 
-    models.Object(name='chair'),
+    models.Object(name=models.Name(name='bed', proper=False)),
+    models.Object(name=models.Name(name='desk', proper=False)), 
+    models.Object(name=models.Name(name='chair', proper=False)),
   ]
 )
 bedroom.sublocation(home)

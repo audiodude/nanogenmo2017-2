@@ -1,8 +1,20 @@
 import random
 
 
+def generate_id():
+  id_ = 0
+  while True:
+    yield id_
+    id_ += 1
+get_id = generate_id()
+
 class Model(dict):
-  pass
+  def __init__(self, **kwargs):
+    super(Model, self).__init__(**kwargs)
+    self.id_ = next(get_id)
+
+  def equals(self, oth):
+    return hasattr(oth, 'id_') and self.id_ == oth.id_
 
 class Object(Model):
   pass

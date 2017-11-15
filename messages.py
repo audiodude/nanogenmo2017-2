@@ -13,8 +13,8 @@ class DescribeLocationMsg(Message):
   def __init__(self, location=None):
     self.location = location
 
-  def to_proto_ps(self):
-    return [phrase.PPSAbstractSyntax(
+  def to_ps(self):
+    return [phrase.PSAbstractSyntax(
       head='be', subject=phrase.ReferringNP(obj=self.location),
       predicate=phrase.CannedText(
         text='was the size of a %s' % self.location['size'])
@@ -25,13 +25,12 @@ class DescribeObjectLocationMsg(Message):
     self.obj = obj
     self.location = location
 
-  def to_proto_ps(self):
-    subj = phrase.PPSAbstractSyntax(
-      head=self.obj['name'], features={'definite': False})
-    mod = phrase.PPSAbstractSyntax(
+  def to_ps(self):
+    mod = phrase.PSAbstractSyntax(
       head='in', obj=phrase.ReferringNP(obj=self.location))
-    return [phrase.PPSAbstractSyntax(
-      head='be', subject=subj, predicate=phrase.CannedText(text='was'),
+    return [phrase.PSAbstractSyntax(
+      head='be', subject=phrase.ReferringNP(obj=self.obj),
+      predicate=phrase.CannedText(text='was'),
       modifier=mod, features={'tense': 'past'})]
 
 class DescribeCharacterMsg(Message):
@@ -42,10 +41,10 @@ class DescribeCharacterMsg(Message):
   def append(self, attribute):
     self.attributes.append(attribute)
 
-  def to_proto_ps(self):
+  def to_ps(self):
     proto_ps = []
     for attr in self.attributes:
-      proto_ps.append(phrase.PPSAbstractSyntax(
+      proto_ps.append(phrase.PSAbstractSyntax(
         head='be', subject=phrase.ReferringNP(obj=self.character),
         predicate=phrase.CannedText(text='was'),
         obj=phrase.CannedText(text=attr['text']
@@ -58,10 +57,10 @@ class DescribeCharacterLocationMsg(Message):
     self.location = location
     self.posture = self.character['posture']
 
-  def to_proto_ps(self):
-    mod = phrase.PPSAbstractSyntax(
+  def to_ps(self):
+    mod = phrase.PSAbstractSyntax(
       head='in', obj=phrase.ReferringNP(obj=self.location))
-    return [phrase.PPSAbstractSyntax(
+    return [phrase.PSAbstractSyntax(
       head=self.posture, subject=phrase.ReferringNP(obj=self.character),
       modifier=mod, predicate=phrase.CannedText(text='was %s' % self.posture),
       features={'tense': 'past continuous'})]

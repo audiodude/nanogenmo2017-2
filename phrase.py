@@ -3,7 +3,7 @@ import models
 class PhraseSpecification:
   pass
 
-class PPSAbstractSyntax(PhraseSpecification):
+class PSAbstractSyntax(PhraseSpecification):
   def __init__(self, head=None, features=None, subject=None, obj=None,
                predicate=None, modifier=None):
     self.head = head
@@ -45,12 +45,18 @@ class CannedText:
   def __init__(self, text=None):
     self.text = text
 
+  def equals(self, oth):
+    return hasattr(oth, 'text') and self.text == oth.text
+
   def __str__(self):
     return self.text
 
 class ReferringNP:
   def __init__(self, obj=None):
     self.obj = obj
+
+  def equals(self, oth):
+    return self.obj.equals(oth.obj)
 
   def __str__(self):
     name = self.obj['name']
