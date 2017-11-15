@@ -17,7 +17,7 @@ class DescribeLocationMsg(Message):
     return [phrase.PPSAbstractSyntax(
       head='be', subject=phrase.ReferringNP(obj=self.location),
       predicate=phrase.CannedText(
-        text='is the size of a %s' % self.location['size'])
+        text='was the size of a %s' % self.location['size'])
     )]
 
 class DescribeObjectLocationMsg(Message):
@@ -31,7 +31,8 @@ class DescribeObjectLocationMsg(Message):
     mod = phrase.PPSAbstractSyntax(
       head='in', obj=phrase.ReferringNP(obj=self.location))
     return [phrase.PPSAbstractSyntax(
-      head='be', subject=subj, modifier=mod, features={'tense': 'past'})]
+      head='be', subject=subj, predicate=phrase.CannedText(text='was'),
+      modifier=mod, features={'tense': 'past'})]
 
 class DescribeCharacterMsg(Message):
   def __init__(self, character=None):
@@ -46,6 +47,7 @@ class DescribeCharacterMsg(Message):
     for attr in self.attributes:
       proto_ps.append(phrase.PPSAbstractSyntax(
         head='be', subject=phrase.ReferringNP(obj=self.character),
+        predicate=phrase.CannedText(text='was'),
         obj=phrase.CannedText(text=attr['text']
       )))
     return proto_ps
@@ -61,7 +63,8 @@ class DescribeCharacterLocationMsg(Message):
       head='in', obj=phrase.ReferringNP(obj=self.location))
     return [phrase.PPSAbstractSyntax(
       head=self.posture, subject=phrase.ReferringNP(obj=self.character),
-      modifier=mod, features={'tense': 'past continuous'})]
+      modifier=mod, predicate=phrase.CannedText(text='was %s' % self.posture),
+      features={'tense': 'past continuous'})]
 
 class AccomplishGoalMsg(Message):
   def __init__(self, who=None, where=None, action=None):

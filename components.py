@@ -19,8 +19,12 @@ class DocumentPlanner:
   def describe_character(self, c):
     msg = messages.DescribeCharacterMsg(character=c)
     msg.append(models.Attribute(text='%s years old' % c['age']))
-    msg.append(
-      models.Attribute(text='man' if c['gender'] == 'male' else 'woman'))
+    if c['gender'] == 'male':
+      msg.append(models.Attribute(text='a man'))
+    elif c['gender'] == 'female':
+      msg.append(models.Attribute(text='a woman'))
+    else:
+      msg.append(models.Attribute(text='a person'))
     self.messages.append(msg)
 
   def describe_character_location(self, c):
@@ -44,19 +48,15 @@ class DocumentPlanner:
       self.messages.append(
         messages.DescribeObjectLocationMsg(obj=o, location=l))
 
-
-class Microplanner:
+class Realizer:
   def __init__(self, document_plan):
     self.document_plan = document_plan[:]
 
   def run(self):
     self.proto_ps = [msg.to_proto_ps() for msg in self.document_plan]
     self.text_specification = [pps for ar in self.proto_ps for pps in ar]
+    self.proto_sentences = [str(x) for x in self.text_specification]
+    self.text = ' '.join(self.make_sentence(s) for s in self.proto_sentences)
 
-
-class Realizer:
-  def __init__(self, text_specification):
-    self.text_specification = text_specification[:]
-
-  def run(self):
-    self.text = ' '.join(str(x) for x in self.text_specification)
+  def make_sentence(self, s):
+    return s[0].upper() + s[1:] + '.'

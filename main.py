@@ -2,7 +2,7 @@ import random
 
 import messages
 import models
-from components import DocumentPlanner, Microplanner, Realizer
+from components import DocumentPlanner, Realizer
 
 eggs = models.Object(name='eggs')
 
@@ -10,14 +10,16 @@ sleep = models.Action(name='sleep', transitive=False)
 get_eggs = models.Action(name='get eggs', transitive=True, obj=eggs)
 
 henry = models.Character(
-  name='Henry', gender='male', age=25, transit_modes=[
-    'walk', 'bike', 'drive', 'bus'], posture='standing', desires=[get_eggs])
+  name=models.Name(name='Henry', proper=True), gender='male', age=25,
+  transit_modes=['walk', 'bike', 'drive', 'bus'], posture='standing',
+  desires=[get_eggs])
 
 home = models.Location(
-  name='home', size='building', satisfies=[],
+  name=models.Name(name='home', proper=True), size='building', satisfies=[],
 )
 bedroom = models.Location(
-  name='bedroom', size='room', satisfies=[sleep],
+  name=models.Name(name='bedroom', proper=False), size='room',
+  satisfies=[sleep],
   objects_present=[
     models.Object(name='bed'), models.Object(name='desk'), 
     models.Object(name='chair'),
@@ -26,8 +28,9 @@ bedroom = models.Location(
 bedroom.sublocation(home)
 
 store = models.Location(
-  name='the store', size='building', satisfies=[get_eggs],
-  people_present=[{'quantity': 'a few', 'identity': 'anonymous'}],
+  name=models.Name(name='store', proper=False), size='building',
+  satisfies=[get_eggs], people_present=[{
+    'quantity': 'a few', 'identity': 'anonymous'}],
   objects_present=[eggs])
 
 henry.place(bedroom)
@@ -41,10 +44,7 @@ model = models.DomainModel([eggs], [sleep, get_eggs], [henry], [home, store])
 dp = DocumentPlanner(model)
 dp.run()
 
-microplanner = Microplanner(dp.messages)
-microplanner.run()
-
-realizer = Realizer(microplanner.text_specification)
+realizer = Realizer(dp.messages)
 realizer.run()
 
 print(realizer.text)

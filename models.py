@@ -7,6 +7,9 @@ class Model(dict):
 class Object(Model):
   pass
 
+class Name(Model):
+  pass
+
 class Character(Model):
   def place(self, location):
     self['location'] = location
