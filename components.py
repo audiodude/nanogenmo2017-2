@@ -40,12 +40,12 @@ class DocumentPlanner:
   def describe_random_objects_in_location(self, l):
     n_obj = len(l['objects_present'])
     n_to_desc = n_obj
-    if n_obj > 4:
+    if n_obj >= 4:
       n_to_desc = random.randint(1, n_obj // 2)
     objs = l['objects_present'][:]
-    objs = objs[:n_to_desc]
+    objs = objs[:n_to_desc + 1]
     random.shuffle(objs)
-    for i, o in zip(range(n_to_desc), objs):
+    for i, o in enumerate(objs):
       self.messages.append(
         messages.DescribeObjectLocationMsg(obj=o, location=l))
 
@@ -58,12 +58,13 @@ class Realizer:
     self.ps = [ps for ar in self.ps for ps in ar]
 
     self.aggregate()
+    self.generate_referring_expressions()
 
-    self.proto_sentences = [str(x) for x in self.text_specification]
+    self.proto_sentences = [str(x) for x in self.ps]
     self.text = ' '.join(self.make_sentence(s) for s in self.proto_sentences)
 
   def aggregate(self):
-    self.text_specification = []
+    aggregated_ps = []
     last_ps = None
     combined = False
     for ps in self.ps:
@@ -99,11 +100,17 @@ class Realizer:
 
         new_ps = phrase.PSAbstractSyntax(
           subject=ps.subject, predicate=ps.predicate, obj=new_obj)
-        self.text_specification.append(new_ps)
+        aggregated_ps.append(new_ps)
       else:
         combined = False
-        self.text_specification.append(last_ps)
+        aggregated_ps.append(last_ps)
       last_ps = ps
+    if not combined:
+      aggregated_ps.append(last_ps)
+    self.ps = aggregated_ps
+
+  def generate_referring_expressions(self):
+    pass
 
   def make_sentence(self, s):
     return s[0].upper() + s[1:] + '.'
